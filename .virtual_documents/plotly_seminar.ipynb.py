@@ -4,17 +4,17 @@ categories = ['processing cost','mechanical properties','chemical stability',
 
 categories = ['Whatever {}'.format(i) for i in range(1, 5)] + ['Data visualization']+["Whatever 1"]
 
-scores = [1, 3, 4, 2, 3]
+scores = [2, 3, 4, 2, 4]
 fig = go.Figure()
 
 _ = fig.add_trace(go.Scatterpolar(
-      r=scores+[1],
+      r=scores+[2],
       theta=categories,
       name='Before this seminar',
-    hoverinfo='r+name',
+      hoverinfo='r+name',
 ))
 _ = fig.add_trace(go.Scatterpolar(
-    r=scores[:-1]+[5]+[1],
+    r=scores[:-1]+[5]+[2],
     theta=categories,
     name='After this seminar',
     hoverinfo='r+name',
@@ -23,9 +23,9 @@ _ = fig.add_trace(go.Scatterpolar(
 _ = fig.update_layout(
     width=400, height=400, font_size=14,
         polar=dict(radialaxis=dict(visible=True, range=[0, 5.5]),),
-#         margin=dict(l=100,r=120,b=0,t=0),
+        margin=dict(l=100,r=100,b=0,t=0),
         showlegend=False,
-        hoverlabel = dict(font=dict(size=16), namelength = -1)
+        hoverlabel = dict(font=dict(size=16), namelength = -1),
 )
 
 fig.show()
@@ -47,6 +47,7 @@ from sklearn.linear_model import Lasso
 
 # Some jupyter-notebook related imports/settings
 from plotly.offline import init_notebook_mode, plot
+from IPython import display
 from IPython.display import IFrame
 from IPython.core.interactiveshell import InteractiveShell
 init_notebook_mode(connected=False)
@@ -54,7 +55,7 @@ InteractiveShell.ast_node_interactivity = "all"
 
 
 empty_fig = go.Figure()
-_ = empty_fig.show()
+empty_fig.show()
 
 
 # Create random sample data
@@ -64,11 +65,12 @@ scatter_data = np.random.rand(10)
 scatter_fig = go.Figure()
 
 # Add scatter-plot
+# Assignment to _ variable similar to redirection to /dev/null in bash. Avoids output of return value.
 _ = scatter_fig.add_trace(
         go.Scatter(
-            y = scatter_data,
-    #       x = list(range(len(scatter_data))),
-            mode = 'markers',
+            y=scatter_data,
+    #       x=list(range(len(scatter_data))),
+            mode='markers',
         )
     )
 
@@ -86,9 +88,9 @@ sine_fig = go.Figure()
 # Add scatter-plot
 _ = sine_fig.add_trace(
     go.Scatter(
-        x = x,
-        y = y,
-        mode = 'lines',
+        x=x,
+        y=y,
+        mode='lines',
     )
 )
 
@@ -98,19 +100,20 @@ _ = sine_fig.show()
 
 # Define figure layout
 sine_layout = go.Layout(
+    
     width=800, height=400,
     title=dict(text='Simple sine function', x=0.55,
                font_size=20,                                 # Magic underscore notation
-#              font=dict(size=20),
               ),
+#   title_text='Simple sine function',
 
-#   margin=go.layout.Margin(l=80, r=0, b=0, t=50,),          # Access through go.layout subclasses
     margin=dict(l=80, r=0, b=50, t=100,),
-       
+
     xaxis=dict(
         title='x', title_font=dict(size=18,),
         tickfont=dict(size=18,), 
-        tickmode='linear', tick0 = 0, dtick = np.pi,
+        tickmode='linear', tick0=0, dtick=np.pi,
+        gridcolor='black',
     ),
 )
 
@@ -120,9 +123,11 @@ _ = sine_fig.update_layout(sine_layout)
 # Apply layout-update to certain axes only
 _ = sine_fig.update_yaxes(title=dict(text='sin(x)', font_size=18, font_color='blue'),
         range=[-1.05, 1.05],
-        tickmode = 'linear', tick0 = 0, dtick = 0.5, tickfont=dict(size=18,),
+        tickmode='linear', tick0=0, dtick=0.5, tickfont=dict(size=18,),
+        gridcolor='black', zerolinecolor='black'
     )
 
+# Show figure
 _ = sine_fig.show()
 
 
@@ -140,22 +145,22 @@ wine_fig = go.Figure()
 # Add wine-data as Bar-chart
 _ = wine_fig.add_trace(
     go.Bar(
-        y = wine_df.sort_values(by='alcohol', ascending=False).iloc[:20]['alcohol'],
+        y=wine_df.sort_values(by='alcohol', ascending=False).iloc[:20]['alcohol'],
     )
 )
 
 # Define layout
 wine_layout = go.Layout(
-    
     width=1000, height=350,
     font_size=10,
     title=dict(text='Alcohol content of 20 strongest wines in dataset', x=0.55,
                font_size=20),
+    
     margin=dict(l=80, r=0, b=0, t=100,),
     
     xaxis=dict(
         title='rank', title_font=dict(size=18,),
-        tickmode = 'linear', tick0 = 2, dtick = 1,
+        tickmode='linear', tick0=2, dtick=1,
         tickfont=dict(size=18,),
     ),
     
@@ -173,6 +178,7 @@ _ = wine_fig.update_layout(wine_layout)
 _ = wine_fig.show()
 
 
+# Let's create some random data
 heat_data = np.random.randn(10, 10)
 
 # Create figure
@@ -197,10 +203,9 @@ _ = heat_fig.show()
 
 # Let's create some random sample data
 metals = ["Ni", "Pd", "Pt"]
-metal_colors = ["red", "green", "blue"]
 energy_data = np.random.uniform(low=0, high=3, size=(10,3))
 
-# Let's set our ground states
+# Let's set our "ground states"
 energy_data[0,:] = 0
 
 # Let's introduce some outliers
@@ -211,7 +216,6 @@ energy_data[-1, 2] = energy_data[-1, 2]-4
 # DataFrame creation
 energy_df = pd.DataFrame(data=energy_data, columns=metals)
 
-energy_df.shape
 energy_df.head(10)
 
 
@@ -222,22 +226,29 @@ hover_texts = ["ground state"]+["all good"]*8+["messed up POTCAR"] + \
 
 hover_texts = [hover_text+'<br>Directory {}'.format(i) for i, hover_text in enumerate(hover_texts)]
 hover_texts = np.reshape(hover_texts, (3, 10))
+hover_texts.shape
+print(hover_texts[0])
+
 
 # Create Figure
 energy_fig = go.Figure()
+
+metal_colors = ["red", "green", "blue"]
 
 # Add one trace per metal for more control
 for imetal, metal in enumerate(metals):
     _ = energy_fig.add_trace(
             go.Scatter(
-                x = [imetal]*len(energy_df[metal]),
-                y = energy_df[metal],
-                mode = 'markers', marker_size=8, name=metal,
-                marker_color = metal_colors[imetal],
-                text = hover_texts[imetal], 
+                x=[imetal]*len(energy_df[metal]),
+                y=energy_df[metal],
+                mode='markers', marker_size=8, name=metal,
+                
+                marker_color=metal_colors[imetal],
                 hoverinfo='x+y+text',
+                text=hover_texts[imetal],
             ),
     )
+#   print(hover_texts[imetal])
 
 # Zero-reference line
 _ = energy_fig.add_trace(
@@ -245,15 +256,17 @@ _ = energy_fig.add_trace(
             x = [0, 2],
             y = [0, 0],
             mode='lines', line_color='grey', line_width=2,
-            showlegend=False,
+            showlegend=False, hoverinfo='skip',
         ),
 )
 
 # Update figure layout
 energy_layout = go.Layout(
+    
     width=700, height=500,
     font_size=10,
     title=dict(text='Some calculated energies', x=0.5, font_size=20),
+    
     margin=dict(l=80, r=0, b=0, t=100,),
     
     xaxis=dict(
@@ -273,8 +286,8 @@ energy_layout = go.Layout(
 _ = energy_fig.update_layout(energy_layout)
 
 # Plot and save figure
-_ = plot(energy_fig, filename='./dft_energies.html', auto_open=False)
 _ = energy_fig.show()
+_ = plot(energy_fig, filename='./dft_energies.html', auto_open=False)
 
 
 # Let's create some sample MD data
@@ -295,18 +308,19 @@ md_fig = go.Figure()
 
 # Add one line-trace for each data-point
 for imos, mos in enumerate(md_mos):
+    
+    # Add vertical line for each MD-step
     _ = md_fig.add_trace(go.Scatter(
             x=[imos, imos],
             y=[mos_min, mos_max],
             mode='lines', text=str(mos),
-            line=dict(color='rgba({}, {}, {}, {})'.format(0, 0, 255-mos_colors[imos]*255, 1), width=3),
+            line=dict(color='rgba({}, {}, {}, {})'.format(0, 0, 255*(1-mos_colors[imos]), 1), width=3),
             hoverinfo='x+text', showlegend=False,
             )
     )
 
-# Add overall metal-OS line
+# Add overall Pt-OS line
 _ = md_fig.add_trace(go.Scatter(
-        x=[i+1 for i in list(range(len(md_mos)))],
         y=md_mos,
         mode='lines', text=md_mos,
         line=dict(color='white', width=2, shape='spline'),
@@ -316,7 +330,7 @@ _ = md_fig.add_trace(go.Scatter(
 
 # Define custom colorscale legend via heatmap
 color_array = np.linspace(min(mos_colors), max(mos_colors), 51)
-color_list = ['rgba({}, {}, {}, {})'.format(0, 0, 255-color_val*255, 1) for color_val in color_array]
+color_list = ['rgba({}, {}, {}, {})'.format(0, 0, 255*(1-color_val), 1) for color_val in color_array]
 _ = md_fig.add_trace(go.Heatmap(
         z=[np.linspace(mos_min, mos_max, 51)],
         colorscale=[color for color in color_list],
@@ -336,10 +350,10 @@ _ = md_fig.add_annotation(
 md_layout = go.Layout(
     title=dict(text="Pt-OS during MD simulation", font_size=18, x=0.5,),
     width=900, height=450, margin=dict(l=80, r=0, b=0, t=50,),
-    hoverlabel = {'namelength': -1}, hovermode='x unified',
     autosize=True,
-    yaxis=dict(title='OS', side='left', range=[mos_min, mos_max]),
-    xaxis=dict(title='MD step', range=[0, len(md_mos)],)
+    yaxis=dict(title='Pt-OS', side='left', range=[mos_min, mos_max]),
+    xaxis=dict(title='MD step', range=[0, len(md_mos)],),
+    hovermode='x unified', hoverlabel={'namelength': -1},
 )
 
 # Update layout
@@ -368,7 +382,6 @@ n_components=4
 pca = PCA(n_components=n_components)
 x_transformed = pca.fit_transform(x_scaled)
 
-
 pca_headers = ['PC {}'.format(pci) for pci in range(x_transformed.shape[1])]
 
 # Define df with feature-weights of each PC
@@ -376,6 +389,7 @@ weight_df = pd.DataFrame(
     data=pca.components_.transpose(),
     columns=pca_headers,
 ).abs()
+
 
 # Define figure with 2 vertically stacked subplots
 pca_fig = make_subplots(rows=2, subplot_titles=["Cumulative variance", "Weights > 0.3"],
@@ -393,7 +407,7 @@ _ = pca_fig.add_trace(go.Bar(
     row=1, col=1,
 )
 
-# Add weight heatmap to weight plot
+# Add weight heatmap to second subplot
 _ = pca_fig.add_trace(go.Heatmap(
         x=['PC '+ str(i) for i in range(n_components)],
         y=feature_names,
@@ -407,14 +421,16 @@ _ = pca_fig.add_trace(go.Heatmap(
 # Define global layout
 pca_layout = go.Layout(
     title=dict(text='Principal component analysis (PCA)', x=0.5),
-    width=800, height=600, font=dict(size=12), margin=dict(l=0, r=0, b=0, t=100,),
-    xaxis=dict(showgrid=True), yaxis1=dict(ticks=""),
+    width=800, height=600, font=dict(size=12),
+    margin=dict(l=0, r=0, b=0, t=100,),
 )
 
 # Update global layout
 _ = pca_fig.update_layout(pca_layout)
 
-pca_fig.show()
+# Show figure
+_ = pca_fig.show()
+_ = plot(pca_fig, filename='./pca.html', auto_open=False)
 
 
 # Define data
@@ -446,8 +462,7 @@ lasso_feat_fig = go.Figure()
 
 # Plot course of Features
 for ifeat, feat in enumerate(feature_names):
-    _ = lasso_feat_fig.add_trace(
-    go.Scatter(
+    _ = lasso_feat_fig.add_trace(go.Scatter(
         x=alphas,
         y=[coef[ifeat] for coef in coefs],
         mode='lines', line=dict(width=3), showlegend=True, name=feat,
@@ -457,15 +472,16 @@ for ifeat, feat in enumerate(feature_names):
 lasso_feat_layout = go.Layout(
     width=1000, height=400, font=dict(size=12), margin=dict(l=0, r=0, b=0, t=50,),
     title=dict(text='LASSO - Features', x=0.47,),
-    hoverlabel = {'namelength': -1}, hovermode='x unified',
     xaxis=dict(title=r'$\alpha$', range=[0, max(alphas)],),
     yaxis=dict(title='Weights',),
+    
+    hoverlabel = {'namelength': -1}, hovermode='x unified',
 )
 
 _ = lasso_feat_fig.update_layout(lasso_feat_layout)
 
 # Save and plot Figure
-_ = plot(lasso_feat_fig, filename='./lasso_feat.html', auto_open=False)
+_ = plot(lasso_feat_fig, filename='./lasso.html', auto_open=False)
 _ = lasso_feat_fig.show()
 
 
@@ -477,7 +493,7 @@ print(energy_fig)
 energy_fig.show("json")
 
 
-# Static export requires some dependencies, e.g. psutil, plotly-orca
+# # Static export requires some dependencies, e.g. psutil, plotly-orca
 _ = energy_fig.write_image('./dft_energies.png')
 _ = energy_fig.write_image('./dft_energies.svg')
 _ = energy_fig.write_json('./dft_energies.json')
@@ -487,6 +503,7 @@ _ = plot(energy_fig, filename='./dft_energies.html', auto_open=False)
 _ = energy_fig.write_html('./dft_energies.html')
 
 # Import of interactive html-figure into jupyter-notebook
+# del energy_fig
 IFrame("./dft_energies.html", width=750, height=550)
 
 
@@ -494,13 +511,13 @@ error_layout = go.Layout(
     width=400, height=400,
 #     abc='abc',
     xaxis=dict(
-#         abc='abc',
-#         ticks='abc',
+#           abc='abc',
+#          ticks='abc',
     )
 )
 
 
-# pd.options.plotting.backend = "matplotlib"
+pd.options.plotting.backend = "matplotlib"
 
 df = pd.DataFrame(dict(a=[1,3,2], b=[3,2,1]))
 df.head()
@@ -508,7 +525,7 @@ fig = df.plot()
 
 
 pd.options.plotting.backend = "plotly"
-# Can also be done via api provided by third-party module "cufflinks"
+
 fig1 = df.plot()
 fig1.show()
 
