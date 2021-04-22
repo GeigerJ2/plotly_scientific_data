@@ -1,6 +1,4 @@
 import plotly.graph_objects as go
-categories = ['processing cost','mechanical properties','chemical stability',
-              'thermal stability', 'device integration']
 
 categories = ['Whatever {}'.format(i) for i in range(1, 5)] + ['Data visualization']+["Whatever 1"]
 
